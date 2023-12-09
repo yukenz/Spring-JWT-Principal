@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,11 +30,11 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        //Bisa gak dapetin username dari token bearer
         String authorization = request.getHeader("Authorization");
         String username = null;
         String jwtToken = null;
 
+        //Bisa gak dapetin username dari token bearer
         if (Objects.nonNull(authorization) && authorization.startsWith("Bearer")) {
 
             try {
@@ -45,14 +46,21 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-        // username terisi tapi context null
+        // username terisi dan context belum di set
         if (Objects.nonNull(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.loadUserByUsername(username);
+
+            UserDetails userDetails = null;
+            try {
+                userDetails = userService.loadUserByUsername(username);
+            } catch (UsernameNotFoundException e) {
+                e.printStackTrace();
+            }
 
             log.info("UserDetail Acquired");
             if (jwtService.validateJWT(jwtToken, userDetails)) {
 
-                UsernamePasswordAuthenticationToken authObj = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authObj =
+                        new UsernamePasswordAuthenticationToken(userDetails, null   , userDetails.getAuthorities());
                 authObj.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authObj);

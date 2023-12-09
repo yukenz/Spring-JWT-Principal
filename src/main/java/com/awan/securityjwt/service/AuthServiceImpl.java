@@ -1,17 +1,13 @@
 package com.awan.securityjwt.service;
 
-import com.awan.securityjwt.entity.User;
 import com.awan.securityjwt.model.request.AuthRequest;
 import com.awan.securityjwt.service.interfaces.AuthService;
 import com.awan.securityjwt.service.interfaces.JWTService;
 import com.awan.securityjwt.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,20 +25,25 @@ public class AuthServiceImpl implements AuthService {
         String password = request.getPassword();
 
         try {
-            authenticationManager.authenticate(
+            Authentication authenticate = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
+
+            Object principal = authenticate.getPrincipal();
+
+            if (principal instanceof UserDetails) {
+                return jwtService.generateJWT((UserDetails) principal);
+            }
+
         } catch (DisabledException e) {
             throw new RuntimeException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
             throw new RuntimeException("INVALID_CREDENTIALS", e);
+        } catch (LockedException e) {
+            throw new RuntimeException("USER_LOCKED", e);
         }
 
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("404 User"));
-
-        return jwtService.generateJWT(
-                userService.loadUserByUsername(user.getUsername()));
+        throw new BadCredentialsException("Invalid Principal");
 
     }
 }

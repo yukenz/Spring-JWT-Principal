@@ -1,6 +1,6 @@
 package com.awan.securityjwt.service.interfaces;
 
-import com.awan.securityjwt.entity.User;
+import com.awan.securityjwt.model.entity.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Optional;

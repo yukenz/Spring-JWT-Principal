@@ -1,6 +1,6 @@
 package com.awan.securityjwt.service;
 
-import com.awan.securityjwt.entity.User;
+import com.awan.securityjwt.model.entity.User;
 import com.awan.securityjwt.service.interfaces.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> byUsername = findByUsername(username);
 
         if (!byUsername.isPresent()) {
-            throw new UsernameNotFoundException("User tidak ditemukan");
+            throw new UsernameNotFoundException("LocalUser tidak ditemukan");
         }
 
         User user = byUsername.get();
