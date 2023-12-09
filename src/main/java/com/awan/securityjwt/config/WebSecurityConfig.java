@@ -1,9 +1,9 @@
 package com.awan.securityjwt.config;
 
-import com.awan.securityjwt.security.entrypoint.JwtAuthenticationEntryPoint;
-import com.awan.securityjwt.security.filter.JWTFilter;
+import com.awan.securityjwt.security.entrypoint.AuthenticationEntryPointImpl;
+import com.awan.securityjwt.security.filter.JWTFilterUserLocal;
 import com.awan.securityjwt.service.interfaces.UserLDAPService;
-import com.awan.securityjwt.service.interfaces.UserService;
+import com.awan.securityjwt.service.interfaces.UserLocalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,15 +20,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserService userService;
+    /* Data Source */
+    private final UserLocalService userLocalService;
     private final UserLDAPService userLDAPService;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JWTFilter jwtFilter;
+
+    /* Handler */
+    private final AuthenticationEntryPointImpl authenticationEntryPointImpl;
+
+    /*` Filter */
+    private final JWTFilterUserLocal jwtFilterUserLocal;
 
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder())
+        auth.userDetailsService(userLocalService).passwordEncoder(passwordEncoder())
                 .and()
                 .userDetailsService(userLDAPService).passwordEncoder(passwordEncoder());
     }
@@ -57,10 +62,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Handling AuthenticationExeption
         http.exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint);
+                .authenticationEntryPoint(authenticationEntryPointImpl);
 
         // Register JWT Filter
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilterUserLocal, UsernamePasswordAuthenticationFilter.class);
 
         // No Session Save
         http.sessionManagement()

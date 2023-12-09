@@ -25,10 +25,10 @@ public class UserDetailServiceAspect {
             returner = pjp.proceed(pjp.getArgs());
             return returner;
         } catch (Throwable ex) {
-            log.info("Failed Execute {}.{}() with ", className, methodName, ex.getMessage());
+            log.info("Failed Execute {}.{}() - {}", className, methodName, ex.getMessage());
             throw (UsernameNotFoundException) ex;
         } finally {
-            log.info("End Execute {}.{}() with Result \n {}", className, methodName, returner);
+            log.info("End Execute {}.{}()",className, methodName);
         }
     }
 

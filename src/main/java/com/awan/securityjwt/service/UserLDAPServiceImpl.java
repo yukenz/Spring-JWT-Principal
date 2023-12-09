@@ -21,12 +21,12 @@ public class UserLDAPServiceImpl implements UserLDAPService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         UserLDAP userLDAP = repository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("USER NOT FOUND"));
+                .orElseThrow(() -> new UsernameNotFoundException("UserLDAP tidak ditemukan"));
 
         return User.withDefaultPasswordEncoder()
                 .username(userLDAP.getUsername())
                 .password(new String(userLDAP.getPassword()))
-                .roles(String.valueOf(userLDAP.getGid()))
+                .roles("USER")
                 .build();
     }
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User implements Cloneable {
+public class UserLocal implements Cloneable {
 
     private String username;
     private String password;

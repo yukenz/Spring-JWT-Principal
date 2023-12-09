@@ -3,7 +3,7 @@ package com.awan.securityjwt.service;
 import com.awan.securityjwt.model.request.AuthRequest;
 import com.awan.securityjwt.service.interfaces.AuthService;
 import com.awan.securityjwt.service.interfaces.JWTService;
-import com.awan.securityjwt.service.interfaces.UserService;
+import com.awan.securityjwt.service.interfaces.UserLocalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserService userService;
+    private final UserLocalService userLocalService;
     private final JWTService jwtService;
     private final AuthenticationManager authenticationManager;
 

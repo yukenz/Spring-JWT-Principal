@@ -1,7 +1,7 @@
 package com.awan.securityjwt.service;
 
-import com.awan.securityjwt.model.entity.User;
-import com.awan.securityjwt.service.interfaces.UserService;
+import com.awan.securityjwt.model.entity.UserLocal;
+import com.awan.securityjwt.service.interfaces.UserLocalService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,38 +12,38 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserLocalLocalServiceImpl implements UserLocalService {
 
-    private final List<User> users = new ArrayList<>();
+    private final List<UserLocal> userLocals = new ArrayList<>();
 
     @PostConstruct
     private void init() {
 
-        User user = User.builder()
+        UserLocal userLocal = UserLocal.builder()
                 .username("yukenz")
                 .password("awan")
                 .fullName("Yuyun Purniawan")
                 .age(Byte.valueOf("21"))
                 .build();
 
-        users.add(user);
+        userLocals.add(userLocal);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<User> byUsername = findByUsername(username);
+        Optional<UserLocal> byUsername = findByUsername(username);
 
         if (!byUsername.isPresent()) {
             throw new UsernameNotFoundException("LocalUser tidak ditemukan");
         }
 
-        User user = byUsername.get();
+        UserLocal userLocal = byUsername.get();
 
         return org.springframework.security.core.userdetails.User.withDefaultPasswordEncoder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .roles("USER", "ADMIN")
+                .username(userLocal.getUsername())
+                .password(userLocal.getPassword())
+                .roles("USER","EMPLOYEE")
                 .build();
 
 
@@ -51,10 +51,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Optional<User> findByUsername(String username) {
+    public Optional<UserLocal> findByUsername(String username) {
 
-        return users.stream()
-                .filter(user -> user.getUsername().equals(username))
+        return userLocals.stream()
+                .filter(userLocal -> userLocal.getUsername().equals(username))
                 .findFirst();
 
     }

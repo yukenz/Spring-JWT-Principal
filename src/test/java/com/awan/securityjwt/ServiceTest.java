@@ -1,7 +1,7 @@
 package com.awan.securityjwt;
 
 import com.awan.securityjwt.service.interfaces.JWTService;
-import com.awan.securityjwt.service.interfaces.UserService;
+import com.awan.securityjwt.service.interfaces.UserLocalService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +15,14 @@ public class ServiceTest {
     JWTService jwtService;
 
     @Autowired
-    UserService userService;
+    UserLocalService userLocalService;
 
     @Test
     void notNull() {
         Assertions.assertNotNull(jwtService);
-        Assertions.assertNotNull(userService);
+        Assertions.assertNotNull(userLocalService);
 
-        UserDetails userDetails = userService.loadUserByUsername("yukenz");
+        UserDetails userDetails = userLocalService.loadUserByUsername("yukenz");
         Assertions.assertNotNull(userDetails);
 
     }

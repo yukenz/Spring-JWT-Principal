@@ -13,7 +13,7 @@ public class AuthAdvice {
     @ExceptionHandler({AuthenticationException.class})
     ResponseEntity<ResponsePayload<String>> authenticationException(AuthenticationException ex) {
 
-        ResponsePayload<String> res = ResponsePayload.<String>builder().data(ex.getMessage()).status(00).message("Auth Fail").build();
+        ResponsePayload<String> res = ResponsePayload.<String>builder().data(null).status(00).message(ex.getMessage()).build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 
     }
