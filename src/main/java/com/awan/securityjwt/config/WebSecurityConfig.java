@@ -1,7 +1,7 @@
 package com.awan.securityjwt.config;
 
 import com.awan.securityjwt.security.entrypoint.AuthenticationEntryPointImpl;
-import com.awan.securityjwt.security.filter.JWTFilterUserLocal;
+import com.awan.securityjwt.security.filter.JWTFilter;
 import com.awan.securityjwt.service.interfaces.UserLDAPService;
 import com.awan.securityjwt.service.interfaces.UserLocalService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationEntryPointImpl authenticationEntryPointImpl;
 
     /*` Filter */
-    private final JWTFilterUserLocal jwtFilterUserLocal;
+    private final JWTFilter jwtFilter;
 
 
     @Override
@@ -65,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(authenticationEntryPointImpl);
 
         // Register JWT Filter
-        http.addFilterBefore(jwtFilterUserLocal, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         // No Session Save
         http.sessionManagement()

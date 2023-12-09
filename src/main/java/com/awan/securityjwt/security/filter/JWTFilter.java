@@ -5,10 +5,8 @@ import com.awan.securityjwt.service.interfaces.UserLocalService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -25,7 +23,7 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class JWTFilterUserLocal extends OncePerRequestFilter {
+public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
     private final UserLocalService userLocalService;
