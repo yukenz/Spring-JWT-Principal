@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Spring Boot Defaults -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+    <!--    <logger name="org.springframework.web" level="DEBUG"/>-->
+
+    <!-- For DAO -->
+    <property name="LOG_PATTERN_AOP" value="%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level : %message %n"/>
+    <property name="FILE_LOG_AOP" value="log/aop.log"/>
+    <appender name="STD_AOP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN_AOP}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <file>${FILE_LOG_AOP}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${FILE_LOG_AOP}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <maxFileSize>10MB</maxFileSize>
+            <totalSizeCap>0</totalSizeCap>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+    <logger name="com.awan.securityjwt.aop" level="INFO">
+        <appender-ref ref="STD_AOP"/>
+    </logger>
+</configuration>
+
+
+
