@@ -29,7 +29,8 @@ public class LDAPTest {
     void testRepo() throws IOException {
         UserLDAP yuyunPurniawan = repository.findByUsername("ypurniawan").get();
         System.out.println(yuyunPurniawan);
-        saveObj(yuyunPurniawan);
+
+//        saveObj(yuyunPurniawan);
     }
 
     @Test

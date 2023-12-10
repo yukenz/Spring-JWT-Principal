@@ -9,7 +9,6 @@ import javax.naming.Name;
 import java.io.Serializable;
 
 @Entry(
-        base = "ou=developer",
         objectClasses = {"person", "inetOrgPerson", "top"}
 )
 @Data

@@ -16,7 +16,7 @@ public class UserDetailServiceAspect {
     public Object userDetailsService(ProceedingJoinPoint pjp) {
 
         /* Get Full Class Name */
-        String className = pjp.getTarget().getClass().getName();
+        String className = pjp.getTarget().getClass().getSimpleName();
         String methodName = pjp.getSignature().getName();
         Object returner = null;
 

@@ -6,13 +6,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.SerializationUtils;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,9 +25,15 @@ public class JWTServiceImpl implements JWTService {
 
         Map<String, Object> mapClaims = new HashMap<>();
 
-        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+        /* Serialize Object to Bytes */
+        byte[] authoritiesSerialize = SerializationUtils
+                .serialize(userDetails.getAuthorities());
 
-        mapClaims.put("Authorities", authorities);
+        /* Encode Bytes to Base64 for safe Transport */
+        String b64Authorities = Base64.getEncoder()
+                .encodeToString(authoritiesSerialize);
+
+        mapClaims.put("Authorities", b64Authorities);
 
         return Jwts.builder()
                 .setClaims(mapClaims) //Claim must First
@@ -48,16 +53,7 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public String getSubjectJWT(String token) {
-        return Jwts.parser()
-                .setSigningKey(jwtKey)
-                .parseClaimsJws(token)
-                .getBody().getSubject();
-    }
-
-    @Override
     public Claims getClaims(String token) {
-
 
         try {
 
@@ -71,19 +67,29 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorityFromClaims(Object claimAuthority) {
+    public Collection<? extends GrantedAuthority> getAuthorityFromClaims(String b64Authorities) {
         try {
-            if (claimAuthority instanceof Collection) {
-                return ((Collection<Map>) claimAuthority).stream()
-                        .map(colections -> {
-                            Object o = ((Map<String, String>) colections).get("authority");
-                            return new SimpleGrantedAuthority((String) o);
-                        }).collect(Collectors.toList());
+            byte[] decode = Base64.getDecoder().decode(b64Authorities);
+            Object deserialize = SerializationUtils.deserialize(decode);
+
+            if (deserialize instanceof Collection) {
+                return (Collection) deserialize;
             }
-            throw new IllegalArgumentException();
+
+            throw new ClassCastException();
         } catch (Exception e) {
+            log.error("Failed to Deserialize Authority from JWT : {}", e.getMessage());
             return Collections.emptyList();
         }
+    }
+
+
+    @Deprecated
+    public String getSubjectJWT(String token) {
+        return Jwts.parser()
+                .setSigningKey(jwtKey)
+                .parseClaimsJws(token)
+                .getBody().getSubject();
     }
 
 }

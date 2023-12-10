@@ -5,10 +5,11 @@ import com.awan.securityjwt.service.interfaces.UserLocalService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,7 +27,6 @@ import java.util.Objects;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
-    private final UserLocalService userLocalService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -43,16 +43,18 @@ public class JWTFilter extends OncePerRequestFilter {
         /* JWT Valid */
         if (claims != null) {
 
-            Collection<? extends GrantedAuthority> authorities = jwtService.getAuthorityFromClaims(claims.get("Authorities"));
+            String b64Authorities = ((String) claims.get("Authorities"));
+            Collection<? extends GrantedAuthority> authorities =
+                    jwtService.getAuthorityFromClaims(b64Authorities);
 
             /* SecContext belom diset */
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                PreAuthenticatedAuthenticationToken preAuth
-                        = new PreAuthenticatedAuthenticationToken(claims.getSubject(), null, authorities);
-                preAuth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                AbstractAuthenticationToken authentication
+                        = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(preAuth);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 
